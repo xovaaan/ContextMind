@@ -1,0 +1,38 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+*.pem
+.DS_Store
+*.local
+.env
+.env.local
+.env.production.local
+.env.test.local
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local runtime info
+node_modules
+.expo
+.next
+.DS_Store
+.env*
+dist
+build
