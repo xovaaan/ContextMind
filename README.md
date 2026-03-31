@@ -21,7 +21,7 @@ ContextMind is a high-performance state management layer for LLM applications. I
 ### 1. Cost Efficiency (90% Reduction)
 ContextMind's aggressive summarization and extraction logic reduces the number of tokens sent to your LLM by up to 90%.
 
-![Cost Comparison](./public/bench_cost.png)
+![Cost Comparison](./public/bench1.png)
 
 | Messages | Raw GPT-4o | ContextMind | Savings |
 |----------|------------|-------------|---------|
@@ -31,7 +31,7 @@ ContextMind's aggressive summarization and extraction logic reduces the number o
 ### 2. API Latency (Sub-500ms p50)
 Optimized for real-time applications. Our dual-step process (Asynchronous Extraction + Synchronous Retrieval) ensures your users never wait.
 
-![API Latency](./public/bench_latency.png)
+![API Latency](./public/bench2.png)
 
 *   **p50 (Context Retrieval):** 404ms
 *   **p95 (Context Retrieval):** 637ms
