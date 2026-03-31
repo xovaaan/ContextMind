@@ -16,7 +16,7 @@ ContextMind is a high-performance state management layer for LLM applications. I
 ## 🚀 Performance Benchmarks
 
 > [!NOTE]
-> All benchmarks were conducted using **OpenRouter's free model tier** (`mistralai/mistral-7b-instruct:free`) on production-grade **NeonDB** and **Google Cloud** infrastructure.
+> All benchmarks were conducted using **OpenRouter's free model tier** (`nvidia/nemotron-3-nano-30b-a3b:free`) on production-grade **NeonDB** and **Google Cloud** infrastructure.
 
 ### 1. Cost Efficiency (90% Reduction)
 ContextMind's aggressive summarization and extraction logic reduces the number of tokens sent to your LLM by up to 90%.
