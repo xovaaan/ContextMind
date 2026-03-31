@@ -788,7 +788,7 @@ export default function LandingPage() {
             </div>
 
             <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-8 md:mt-0 text-center md:text-right">
-              © 2026 ContextMind · Built for AI performance
+              © 2026 ContextMind · Optimized for OpenRouter
             </div>
           </div>
 

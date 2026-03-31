@@ -113,5 +113,5 @@ npm run dev
 ---
 
 <p align="center">
-  Built with ❤️ by ContextMind Team. Optimized for OpenRouter.
+  Optimized for OpenRouter
 </p>
