@@ -1,5 +1,6 @@
+require('dotenv').config()
 const BASE_URL = 'https://openrouter.ai/api/v1'
-const apiKey = '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'
+const apiKey = process.env.OPENROUTER_API_KEY
 
 const prompt = `Extract standard behavioral patterns and preferences. Require 70%+ confidence.
 Existing keys (update if better data): none
