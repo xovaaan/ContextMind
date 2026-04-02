@@ -10,9 +10,9 @@ type Section =
 const NAV: { label: string; id: Section; group?: string }[] = [
   { label: 'Overview', id: 'overview' },
   { label: 'Quickstart', id: 'quickstart' },
-  { label: 'POST /api/ingest', id: 'ingest', group: 'API Reference' },
-  { label: 'GET /api/context', id: 'context', group: 'API Reference' },
-  { label: 'POST /api/infer', id: 'infer', group: 'API Reference' },
+  { label: 'POST /api/v1/ingest', id: 'ingest', group: 'API Reference' },
+  { label: 'GET /api/v1/context', id: 'context', group: 'API Reference' },
+  { label: 'POST /api/v1/infer', id: 'infer', group: 'API Reference' },
   { label: 'Peers', id: 'peers', group: 'API Reference' },
   { label: 'Sessions', id: 'sessions', group: 'API Reference' },
   { label: 'Python SDK', id: 'sdk-python', group: 'SDKs' },
@@ -156,7 +156,7 @@ export default function DocsPage() {
           <div className="bg-slate-950 text-green-300 font-mono text-sm rounded-xl p-6 leading-loose">
             {`Your App                ContextMind                Your LLM
 ─────────               ────────────               ────────
-New message  →  POST /api/ingest
+New message  →  POST /api/v1/ingest
                   ↓ Store message
                   ↓ Count tokens (js-tiktoken)
                   ↓ Auto-summarize every 20 msgs (1K tokens)
@@ -164,7 +164,7 @@ New message  →  POST /api/ingest
                   ↓ Extract Theory of Mind representations
                   ↓ Generate vector embeddings
 
-Before LLM   →  GET /api/context
+Before LLM   →  GET /api/v1/context
                   ↓ 60% budget → recent messages (verbatim)
                   ↓ 40% budget → latest summary
                   ↓ Append representations (Theory of Mind)
@@ -180,7 +180,7 @@ Before LLM   →  GET /api/context
           <P>Sign up at <Link href="/sign-up" className="text-blue-600 hover:underline">contextmind.app</Link>, create a workspace, and copy your API key from the dashboard. It starts with <code className="text-blue-600 font-mono bg-blue-50 px-1 rounded">ctxmind_</code>.</P>
 
           <H3>2. Create a peer</H3>
-          <Code lang="bash" code={`curl -X POST https://your-app.com/api/peers \\
+          <Code lang="bash" code={`curl -X POST https://your-app.com/api/v1/peers \\
   -H "x-api-key: ctxmind_your_key" \\
   -H "Content-Type: application/json" \\
   -d '{"name": "Alice", "type": "user"}'
@@ -195,7 +195,7 @@ Before LLM   →  GET /api/context
 }`} />
 
           <H3>3. Create a session</H3>
-          <Code lang="bash" code={`curl -X POST https://your-app.com/api/sessions \\
+          <Code lang="bash" code={`curl -X POST https://your-app.com/api/v1/sessions \\
   -H "x-api-key: ctxmind_your_key" \\
   -H "Content-Type: application/json" \\
   -d '{"peerId": "550e8400-...", "name": "Support chat #1"}'
@@ -209,7 +209,7 @@ Before LLM   →  GET /api/context
 }`} />
 
           <H3>4. Ingest messages</H3>
-          <Code lang="bash" code={`curl -X POST https://your-app.com/api/ingest \\
+          <Code lang="bash" code={`curl -X POST https://your-app.com/api/v1/ingest \\
   -H "x-api-key: ctxmind_your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -233,7 +233,7 @@ Before LLM   →  GET /api/context
 }`} />
 
           <H3>5. Retrieve compressed context</H3>
-          <Code lang="bash" code={`curl "https://your-app.com/api/context?sessionId=7c9e6679-...&maxTokens=8000" \\
+          <Code lang="bash" code={`curl "https://your-app.com/api/v1/context?sessionId=7c9e6679-...&maxTokens=8000" \\
   -H "x-api-key: ctxmind_your_key"
 
 # Response:
@@ -249,7 +249,7 @@ Before LLM   →  GET /api/context
 }`} />
 
           <H3>6. Query the peer profile (Infer API)</H3>
-          <Code lang="bash" code={`curl -X POST https://your-app.com/api/infer \\
+          <Code lang="bash" code={`curl -X POST https://your-app.com/api/v1/infer \\
   -H "x-api-key: ctxmind_your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -266,12 +266,12 @@ Before LLM   →  GET /api/context
   "totalRepresentations": 4
 }`} />
 
-          {/* POST /api/ingest */}
-          <H2 id="ingest">POST /api/ingest</H2>
+          {/* POST /api/v1/ingest */}
+          <H2 id="ingest">POST /api/v1/ingest</H2>
           <P>Ingest conversation messages into ContextMind. This is the core write operation. Call it after each turn or in batches.</P>
           <div className="flex gap-2 mb-4">
             <Badge color="blue">POST</Badge>
-            <code className="font-mono text-sm text-slate-700">/api/ingest</code>
+            <code className="font-mono text-sm text-slate-700">/api/v1/ingest</code>
             <Badge color="amber">Auth required</Badge>
           </div>
 
@@ -311,12 +311,12 @@ Before LLM   →  GET /api/context
   "cost": 0.000000856
 }`} />
 
-          {/* GET /api/context */}
-          <H2 id="context">GET /api/context</H2>
+          {/* GET /api/v1/context */}
+          <H2 id="context">GET /api/v1/context</H2>
           <P>Retrieve compressed, token-optimised context for a session. Call this before every LLM API call instead of fetching full message history.</P>
           <div className="flex gap-2 mb-4">
             <Badge color="green">GET</Badge>
-            <code className="font-mono text-sm text-slate-700">/api/context</code>
+            <code className="font-mono text-sm text-slate-700">/api/v1/context</code>
             <Badge color="amber">Auth required</Badge>
             <Badge color="green">FREE</Badge>
           </div>
@@ -353,7 +353,7 @@ Before LLM   →  GET /api/context
           </div>
 
           <H3>Using the response with OpenAI</H3>
-          <Code lang="typescript" code={`const ctx = await fetch('/api/context?sessionId=...&maxTokens=8000', {
+          <Code lang="typescript" code={`const ctx = await fetch('/api/v1/context?sessionId=...&maxTokens=8000', {
   headers: { 'x-api-key': 'ctxmind_...' }
 }).then(r => r.json())
 
@@ -378,8 +378,8 @@ const response = await openai.chat.completions.create({
 
 console.log(\`Sent \${ctx.totalTokens} tokens (saved \${Math.round((1 - ctx.compressionRatio) * 100)}%)\`)`} />
 
-          {/* POST /api/infer */}
-          <H2 id="infer">POST /api/infer</H2>
+          {/* POST /api/v1/infer */}
+          <H2 id="infer">POST /api/v1/infer</H2>
           <P>
             The Infer API lets you query a peer's accumulated psychological profile using plain natural language.
             ContextMind reasons over all stored Theory of Mind representations and synthesizes a direct, actionable answer.
@@ -390,7 +390,7 @@ console.log(\`Sent \${ctx.totalTokens} tokens (saved \${Math.round((1 - ctx.comp
           </P>
           <div className="flex gap-2 mb-4">
             <Badge color="blue">POST</Badge>
-            <code className="font-mono text-sm text-slate-700">/api/infer</code>
+            <code className="font-mono text-sm text-slate-700">/api/v1/infer</code>
             <Badge color="amber">Auth required</Badge>
           </div>
 
@@ -423,11 +423,11 @@ console.log(\`Sent \${ctx.totalTokens} tokens (saved \${Math.round((1 - ctx.comp
           <P>Peers represent entities in your system — users, AI agents, or objects. Each peer has an independent profile built from conversation history.</P>
 
           {[
-            { method: 'POST', path: '/api/peers', color: 'blue', label: 'Create peer', body: '{"name": "Alice", "type": "user", "metadata": {}}' },
-            { method: 'GET', path: '/api/peers', color: 'green', label: 'List peers', query: '?type=user' },
-            { method: 'GET', path: '/api/peers/:id', color: 'green', label: 'Get peer (with representations + sessions)' },
-            { method: 'PATCH', path: '/api/peers/:id', color: 'amber', label: 'Update peer', body: '{"name": "Alice Smith"}' },
-            { method: 'DELETE', path: '/api/peers/:id', color: 'red', label: 'Delete peer (cascade)' },
+            { method: 'POST', path: '/api/v1/peers', color: 'blue', label: 'Create peer', body: '{"name": "Alice", "type": "user", "metadata": {}}' },
+            { method: 'GET', path: '/api/v1/peers', color: 'green', label: 'List peers', query: '?type=user' },
+            { method: 'GET', path: '/api/v1/peers/:id', color: 'green', label: 'Get peer (with representations + sessions)' },
+            { method: 'PATCH', path: '/api/v1/peers/:id', color: 'amber', label: 'Update peer', body: '{"name": "Alice Smith"}' },
+            { method: 'DELETE', path: '/api/v1/peers/:id', color: 'red', label: 'Delete peer (cascade)' },
           ].map(r => (
             <div key={r.path + r.method} className="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0">
               <Badge color={r.color as string}>{r.method}</Badge>
@@ -443,11 +443,11 @@ console.log(\`Sent \${ctx.totalTokens} tokens (saved \${Math.round((1 - ctx.comp
           <P>Sessions are conversation threads tied to peers. One peer can have many sessions. Each session maintains its own message history, summaries, and context.</P>
 
           {[
-            { method: 'POST', path: '/api/sessions', color: 'blue', label: 'Create session', body: '{"peerId": "uuid", "name": "Support #1"}' },
-            { method: 'GET', path: '/api/sessions', color: 'green', label: 'List sessions', query: '?peerId=uuid&isActive=true' },
-            { method: 'GET', path: '/api/sessions/:id', color: 'green', label: 'Get session (with messages + summaries)' },
-            { method: 'PATCH', path: '/api/sessions/:id', color: 'amber', label: 'Update session (name, isActive, metadata)' },
-            { method: 'DELETE', path: '/api/sessions/:id', color: 'red', label: 'Delete session (cascade)' },
+            { method: 'POST', path: '/api/v1/sessions', color: 'blue', label: 'Create session', body: '{"peerId": "uuid", "name": "Support #1"}' },
+            { method: 'GET', path: '/api/v1/sessions', color: 'green', label: 'List sessions', query: '?peerId=uuid&isActive=true' },
+            { method: 'GET', path: '/api/v1/sessions/:id', color: 'green', label: 'Get session (with messages + summaries)' },
+            { method: 'PATCH', path: '/api/v1/sessions/:id', color: 'amber', label: 'Update session (name, isActive, metadata)' },
+            { method: 'DELETE', path: '/api/v1/sessions/:id', color: 'red', label: 'Delete session (cascade)' },
           ].map(r => (
             <div key={r.path + r.method} className="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0">
               <Badge color={r.color as string}>{r.method}</Badge>

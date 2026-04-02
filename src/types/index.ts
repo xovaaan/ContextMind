@@ -132,8 +132,8 @@ export interface InferResponse {
 
 export const REASONING_CONFIDENCE: Record<ReasoningLevel, number> = {
   minimal: 90,
-  low: 80,
-  medium: 70,
+  low: 70,
+  medium: 60,
   high: 60,
   max: 50,
 }

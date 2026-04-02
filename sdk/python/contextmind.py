@@ -198,7 +198,7 @@ class PeersResource:
             peer = cm.peers.create(name="Alice", type="user", metadata={"plan": "pro"})
             print(peer["id"])  # Use this as peerId in sessions and ingest calls
         """
-        return self._client._post("/api/peers", {
+        return self._client._post("/api/v1/peers", {
             "name": name,
             "type": type,
             **({"metadata": metadata} if metadata else {})
@@ -217,7 +217,7 @@ class PeersResource:
         params = {}
         if type:
             params["type"] = type
-        return self._client._get("/api/peers", params=params)
+        return self._client._get("/api/v1/peers", params=params)
 
     def get(self, peer_id: str) -> Dict:
         """
@@ -229,7 +229,7 @@ class PeersResource:
         Returns:
             dict: Peer object with representations and sessions arrays.
         """
-        return self._client._get(f"/api/peers/{peer_id}")
+        return self._client._get(f"/api/v1/peers/{peer_id}")
 
     def update(self, peer_id: str, name: str = None, metadata: Dict = None) -> Dict:
         """
@@ -248,7 +248,7 @@ class PeersResource:
             body["name"] = name
         if metadata is not None:
             body["metadata"] = metadata
-        return self._client._patch(f"/api/peers/{peer_id}", body)
+        return self._client._patch(f"/api/v1/peers/{peer_id}", body)
 
     def delete(self, peer_id: str) -> Dict:
         """
@@ -260,7 +260,7 @@ class PeersResource:
         Returns:
             dict: {"success": True}
         """
-        return self._client._delete(f"/api/peers/{peer_id}")
+        return self._client._delete(f"/api/v1/peers/{peer_id}")
 
 
 class SessionsResource:
@@ -297,7 +297,7 @@ class SessionsResource:
             body["name"] = name
         if metadata:
             body["metadata"] = metadata
-        return self._client._post("/api/sessions", body)
+        return self._client._post("/api/v1/sessions", body)
 
     def list(self, peer_id: str = None, is_active: bool = None) -> List[Dict]:
         """
@@ -315,7 +315,7 @@ class SessionsResource:
             params["peerId"] = peer_id
         if is_active is not None:
             params["isActive"] = str(is_active).lower()
-        return self._client._get("/api/sessions", params=params)
+        return self._client._get("/api/v1/sessions", params=params)
 
     def get(self, session_id: str) -> Dict:
         """
@@ -327,7 +327,7 @@ class SessionsResource:
         Returns:
             dict: Session with messages and summaries arrays.
         """
-        return self._client._get(f"/api/sessions/{session_id}")
+        return self._client._get(f"/api/v1/sessions/{session_id}")
 
     def update(self, session_id: str, name: str = None,
                is_active: bool = None, metadata: Dict = None) -> Dict:
@@ -339,7 +339,7 @@ class SessionsResource:
             body["isActive"] = is_active
         if metadata is not None:
             body["metadata"] = metadata
-        return self._client._patch(f"/api/sessions/{session_id}", body)
+        return self._client._patch(f"/api/v1/sessions/{session_id}", body)
 
     def close(self, session_id: str) -> Dict:
         """
@@ -350,7 +350,7 @@ class SessionsResource:
 
     def delete(self, session_id: str) -> Dict:
         """Delete a session and all its messages and summaries."""
-        return self._client._delete(f"/api/sessions/{session_id}")
+        return self._client._delete(f"/api/v1/sessions/{session_id}")
 
 
 class ContextMind:
@@ -491,7 +491,7 @@ class ContextMind:
             print(f"Ingested {result['tokensIngested']} tokens, cost ${result['cost']:.8f}")
             print(f"Extracted {result['representationsExtracted']} new insights")
         """
-        return self._post("/api/ingest", {
+        return self._post("/api/v1/ingest", {
             "sessionId": session_id,
             "messages": messages,
             "reasoningLevel": reasoning_level,
@@ -557,7 +557,7 @@ class ContextMind:
         }
         if query:
             params["query"] = query
-        data = self._get("/api/context", params=params)
+        data = self._get("/api/v1/context", params=params)
         return ContextResponse(data)
 
     def infer(
@@ -607,5 +607,5 @@ class ContextMind:
         body: Dict[str, Any] = {"peerId": peer_id, "question": question}
         if keys:
             body["keys"] = keys
-        data = self._post("/api/infer", body)
+        data = self._post("/api/v1/infer", body)
         return InferResponse(data)

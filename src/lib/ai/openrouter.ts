@@ -106,19 +106,69 @@ No preamble, no explanation, pure JSON array.`
   const result = await callLLM([
     {
       role: 'system',
-      content: 'You are a psychological profiling engine. Extract behavioral patterns using formal deductive reasoning. Return only valid JSON.',
+      content: `You are a high-fidelity psychological profiling engine.
+      - Output ONLY a raw JSON array.
+      - DO NOT include preamble, explanations, or markdown blocks.
+      - If no traits are found, return exactly [].
+      - Structure: [{"key": "key_name", "value": "string summary", "confidence": 0-100}]`,
     },
     { role: 'user', content: prompt },
-  ], { temperature: 0.3, maxTokens: 2000, useReasoning })
+  ], { temperature: 0.1, maxTokens: 2000, useReasoning })
 
   try {
-    const match = result.match(/\[[\s\S]*\]/)
-    const clean = match ? match[0] : result.replace(/```json\n?|\n?```/g, '').trim()
-    const parsed = JSON.parse(clean)
+    const parsed = parseAIJSON(result)
     return Array.isArray(parsed) ? parsed : []
-  } catch {
+  } catch (err) {
+    console.warn('[extractRepresentations] Failed to parse JSON:', err)
     return []
   }
+}
+
+/**
+ * Bulletproof JSON parser for AI responses.
+ * Extracts the FIRST valid JSON array [...] or object {...} found in the text,
+ * ignoring all preamble, markdown, or closing explanations.
+ */
+function parseAIJSON(text: string): any {
+  if (!text) return null
+  
+  const trimmed = text.trim()
+  
+  // 1. Try direct parse first (fastest)
+  try { return JSON.parse(trimmed) } catch {}
+
+  // 2. Locate the bounds of the JSON array or object
+  // We look for the first [ or { and the corresponding last ] or }
+  const firstArray = trimmed.indexOf('[')
+  const lastArray = trimmed.lastIndexOf(']')
+  
+  const firstObject = trimmed.indexOf('{')
+  const lastObject = trimmed.lastIndexOf('}')
+
+  // Try to extract an array if it looks like the dominant structure
+  if (firstArray !== -1 && lastArray > firstArray) {
+    const candidate = trimmed.substring(firstArray, lastArray + 1)
+    try { return JSON.parse(candidate) } catch {}
+  }
+
+  // Try to extract an object if no array found or array parse failed
+  if (firstObject !== -1 && lastObject > firstObject) {
+    const candidate = trimmed.substring(firstObject, lastObject + 1)
+    try { return JSON.parse(candidate) } catch {
+      // Sometimes models escape quotes incorrectly
+      try {
+        const cleaned = candidate.replace(/\\"/g, '"').replace(/\\n/g, ' ')
+        return JSON.parse(cleaned)
+      } catch {}
+    }
+  }
+
+  // 3. Last resort: Clean markdown markers and try again
+  const cleaned = trimmed.replace(/```json\n?|```\n?|\n?```/g, '').trim()
+  try { return JSON.parse(cleaned) } catch {}
+
+  console.error('[parseAIJSON] Extraction failed. Raw preview:', trimmed.slice(0, 100))
+  return null
 }
 
 export async function queryRepresentations(

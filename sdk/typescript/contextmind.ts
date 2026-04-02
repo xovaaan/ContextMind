@@ -107,10 +107,29 @@ export interface ContextOptions {
   query?: string
 }
 
+export interface ContextResponseData {
+  recentMessages: Message[]
+  summary?: string
+  representations: Representation[]
+  relevantDocuments: unknown[]
+  totalTokens: number
+  compressionRatio: number
+  [key: string]: any
+}
+
 export interface InferOptions {
   peerId: string
   question: string
   keys?: string[]
+}
+
+export interface InferResultData {
+  answer: string
+  confidence: number
+  sourcedFrom: string[]
+  peerName: string
+  totalRepresentations: number
+  [key: string]: any
 }
 
 export interface OpenAIMessage {
@@ -255,7 +274,7 @@ export class PeersResource {
    * @param options.metadata Optional arbitrary metadata.
    */
   async create(options: { name: string; type?: PeerType; metadata?: Record<string, unknown> }): Promise<Peer> {
-    return this.client._post<Peer>('/api/peers', {
+    return this.client._post<Peer>('/api/v1/peers', {
       name: options.name,
       type: options.type ?? 'user',
       ...(options.metadata ? { metadata: options.metadata } : {}),
@@ -266,28 +285,28 @@ export class PeersResource {
    * List all peers, optionally filtered by type.
    */
   async list(options: { type?: PeerType } = {}): Promise<Peer[]> {
-    return this.client._get<Peer[]>('/api/peers', options.type ? { type: options.type } : {})
+    return this.client._get<Peer[]>('/api/v1/peers', options.type ? { type: options.type } : {})
   }
 
   /**
    * Get a peer with their full profile (representations + sessions).
    */
   async get(peerId: string): Promise<Peer & { representations: Representation[]; sessions: Session[] }> {
-    return this.client._get(`/api/peers/${peerId}`)
+    return this.client._get(`/api/v1/peers/${peerId}`)
   }
 
   /**
    * Update a peer's name or metadata.
    */
   async update(peerId: string, updates: { name?: string; metadata?: Record<string, unknown> }): Promise<Peer> {
-    return this.client._patch<Peer>(`/api/peers/${peerId}`, updates)
+    return this.client._patch<Peer>(`/api/v1/peers/${peerId}`, updates)
   }
 
   /**
    * Delete a peer and all associated data (sessions, messages, representations).
    */
   async delete(peerId: string): Promise<{ success: true }> {
-    return this.client._delete<{ success: true }>(`/api/peers/${peerId}`)
+    return this.client._delete<{ success: true }>(`/api/v1/peers/${peerId}`)
   }
 }
 
@@ -302,7 +321,7 @@ export class SessionsResource {
    * @param options.metadata Optional metadata.
    */
   async create(options: { peerId: string; name?: string; metadata?: Record<string, unknown> }): Promise<Session> {
-    return this.client._post<Session>('/api/sessions', {
+    return this.client._post<Session>('/api/v1/sessions', {
       peerId: options.peerId,
       ...(options.name ? { name: options.name } : {}),
       ...(options.metadata ? { metadata: options.metadata } : {}),
@@ -316,21 +335,21 @@ export class SessionsResource {
     const params: Record<string, string> = {}
     if (options.peerId) params.peerId = options.peerId
     if (options.isActive !== undefined) params.isActive = String(options.isActive)
-    return this.client._get<Session[]>('/api/sessions', params)
+    return this.client._get<Session[]>('/api/v1/sessions', params)
   }
 
   /**
    * Get a session with its full message history and summaries.
    */
   async get(sessionId: string): Promise<Session & { messages: Message[] }> {
-    return this.client._get(`/api/sessions/${sessionId}`)
+    return this.client._get(`/api/v1/sessions/${sessionId}`)
   }
 
   /**
    * Update a session.
    */
   async update(sessionId: string, updates: { name?: string; isActive?: boolean; metadata?: Record<string, unknown> }): Promise<Session> {
-    return this.client._patch<Session>(`/api/sessions/${sessionId}`, updates)
+    return this.client._patch<Session>(`/api/v1/sessions/${sessionId}`, updates)
   }
 
   /** Mark a session as closed. */
@@ -340,7 +359,7 @@ export class SessionsResource {
 
   /** Delete a session and all its messages. */
   async delete(sessionId: string): Promise<{ success: true }> {
-    return this.client._delete<{ success: true }>(`/api/sessions/${sessionId}`)
+    return this.client._delete<{ success: true }>(`/api/v1/sessions/${sessionId}`)
   }
 }
 
@@ -447,7 +466,7 @@ export class ContextMind {
    * console.log(`${result.tokensIngested} tokens ingested, cost $${result.cost.toFixed(8)}`)
    */
   async ingest(options: IngestOptions): Promise<IngestResult> {
-    return this._post<IngestResult>('/api/ingest', {
+    return this._post<IngestResult>('/api/v1/ingest', {
       sessionId: options.sessionId,
       messages: options.messages,
       reasoningLevel: options.reasoningLevel ?? 'medium',
@@ -472,7 +491,7 @@ export class ContextMind {
    *   messages: [...msgs, { role: 'user', content: userInput }],
    * })
    */
-  async context(options: ContextOptions): Promise<ContextResponse> {
+   async context(options: ContextOptions): Promise<ContextResponse> {
     const params: Record<string, string> = {
       sessionId: options.sessionId,
       maxTokens: String(options.maxTokens ?? 8000),
@@ -480,7 +499,7 @@ export class ContextMind {
       includeDocuments: String(options.includeDocuments ?? true),
       ...(options.query ? { query: options.query } : {}),
     }
-    const data = await this._get<Record<string, unknown>>('/api/context', params)
+    const data = await this._get<ContextResponseData>('/api/v1/context', params)
     return new ContextResponse(data)
   }
 
@@ -505,8 +524,8 @@ export class ContextMind {
    * console.log(`Confidence: ${result.confidence}%`)
    * console.log(`Based on: ${result.sourcedFrom.join(', ')}`)
    */
-  async infer(options: InferOptions): Promise<InferResponse> {
-    const data = await this._post<Record<string, unknown>>('/api/infer', {
+   async infer(options: InferOptions): Promise<InferResponse> {
+    const data = await this._post<InferResultData>('/api/v1/infer', {
       peerId: options.peerId,
       question: options.question,
       ...(options.keys ? { keys: options.keys } : {}),

@@ -256,7 +256,7 @@ export function useContextMind(
         includeDocuments: String(includeDocuments),
         ...(query ? { query } : {}),
       })
-      const data = await apiFetch(baseUrl, apiKey, `/api/context?${params}`)
+      const data = await apiFetch(baseUrl, apiKey, `/api/v1/context?${params}`)
       const raw = data as Record<string, unknown>
       const compressionRatio = (raw.compressionRatio as number) ?? 1.0
       setContext({
@@ -340,7 +340,7 @@ export function useIngest(): UseIngestReturn {
     setLoading(true)
     setError(null)
     try {
-      const data = await apiFetch(baseUrl, apiKey, '/api/ingest', {
+      const data = await apiFetch(baseUrl, apiKey, '/api/v1/ingest', {
         method: 'POST',
         body: JSON.stringify({ sessionId, messages, reasoningLevel }),
       }) as IngestResult
@@ -409,7 +409,7 @@ export function useInfer(peerId: string | null | undefined): UseInferReturn {
     setLoading(true)
     setError(null)
     try {
-      const data = await apiFetch(baseUrl, apiKey, '/api/infer', {
+      const data = await apiFetch(baseUrl, apiKey, '/api/v1/infer', {
         method: 'POST',
         body: JSON.stringify({ peerId, question, ...(keys ? { keys } : {}) }),
       }) as InferResult
@@ -453,7 +453,7 @@ export function useSession(sessionId: string | null | undefined): UseSessionRetu
   useEffect(() => {
     if (!sessionId) return
     setLoading(true)
-    apiFetch(baseUrl, apiKey, `/api/sessions/${sessionId}`)
+    apiFetch(baseUrl, apiKey, `/api/v1/sessions/${sessionId}`)
       .then(data => setSession(data as UseSessionReturn['session']))
       .catch(err => setError(err instanceof Error ? err : new Error(String(err))))
       .finally(() => setLoading(false))
